@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Page Title</title>
+         <link href="https://cdn.jsdelivr.net/gh/atoms19/ILUS.CSS/dist/ILUS5.min.css" rel="stylesheet">
+         <script src="https://cdn.jsdelivr.net/gh/atoms19/dominity.js/Beta/dominityV3.min.js"></script>  
+          <style>
+              body {
+   
+}
+.wrap-mega{
+    padding-top:60%;
+}
+label{
+    line-height:1.5;
+    width:50%;
+}
+.slider{
+    width:50%;
+}
+h1{margin-bottom:1rem;}
+img{transition:transform 0.5s;}
+#bomb{
+    text-shadow:2px -2px 20px var(--red);
+}
+.opr{
+    position:fixed;
+    z-index:500;
+    top:0;
+}
+          </style>
+          <meta name="viewport" content="width=device-width, initial-scale=1.0">
+          <meta name="keywords" content="image editor,photo editor,css,css image,css filter,img,atoms19,atomic wave,sololearn img" />
+    </head>
+    
+    <body class="wrap-min teal text-thin anime-fade">
+    
+        <img src="https://images.unsplash.com/photo-1531366936337-7c912a4589a7?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=1050&q=80" class="img sharp anime-left"  id="target-img">
+        
+        
+ <!--atomic wave product :D-->     
+ 
+ 
+ <div class="container break-at-md"> 
+        <section class="card pack-5 overflow-x-none anime-right col col-6">
+        
+<div class="flex">
+<label>brightness:</label>
+
+    <input type="range" warn value=100 max=200 min=0  class="slider" id="in-bright" oninput="edit()">
+    
+</div>
+
+<div class="flex">
+<label>sepia:</label>
+    <input type="range" warn value=0 max=100 min=0 oninput="edit()"  class="slider" id="in-sepia">
+</div>
+
+<div class="flex">
+<label>blur:</label>
+    <input type="range"  value=0 max=50 min=0 oninput="edit()"  class="slider" id="in-blur">
+</div>
+
+<div class="flex">
+<label>opacity:</label>
+    <input type="range"  value=100 max=100 min=0 oninput="edit()"  class="slider" id="in-opacity">
+</div>
+
+<div class="flex">
+<label>contrast:</label>
+    <input type="range" alert value=100 max=200 min=0 oninput="edit()"  class="slider" id="in-contrast">
+</div>
+
+<div class="flex">
+<label>saturate:</label>
+    <input type="range" alert value=100 max=200 min=0 oninput="edit()"  class="slider" id="in-saturate">
+</div>
+
+<div class="flex">
+<label>grayscale:</label>
+    <input gray type="range"  value=0 max=100 min=0 oninput="edit()"  class="slider" id="in-gray">
+</div>
+
+<div class="flex">
+<label>hue rotate:</label>
+    <input type="range" victory  value=0 max=360 min=0 oninput="edit()"  class="slider" id="in-hue">
+</div>
+
+<div class="flex">
+<label>invert colors:</label>
+    <input type="range" victory  value=0 max=100 min=0 oninput="edit()"  class="slider" id="in-invert">
+</div>
+<btn class="amber" onclick="rotation()">
+    rotate
+</btn>
+
+<btn class="red right" onclick="reset()">reset</btn>
+
+    </section>
+    
+    
+    
+    <section id="popup" class=" card pack-5 anime-right">
+        <h1>choose your photo</h1>
+        <p>enter a url for editing  your own choice of image</p>
+        <input class="inp border-none" type="url" id="src-inp" placeholder="your url goes here">
+        <btn class="violet right" onclick="cha()">choose</btn>
+        <btn class="lime " onclick="swaparoo()">random img</btn>
+
+    </section>
+    
+    <section class="card pack-5">
+      <h1>get code</h1>
+      <p>
+      get an img tag with the filters as inline style</p>
+      <button class="btn block orange" onclick="copy(getCode('full'));Toast('copied to clipboard','var(--blue)')">get code</button>
+      <b>get only filters</b> 
+      <btn class="vermilion block" onclick="copy(getCode());Toast('copied to clipboard','var(--blue)')">get filters
+      </btn>
+    </section>
+    <script src="https://cdn.jsdelivr.net/gh/AssassinAguilar/Alertism/Alertism.min.js" ></script>
+    </div>
+    <div class="auto text-bright glass pack-4 text-center">built by atoms19 with <span class="anime-zoom anime-fastest  anime-forever anime-alter" id="bomb">💥</span></div>
+    <script>
+        /*credits 
+
+libraries used :D
+ilus.css-by me(for css)
+dominity.js-by me(for DOM)
+alertism.js- by assasin(for popups)
+
+w3school for filter info ;-;
+
+time taken-5~6hours max 
+
+-atoms~
+*/
+
+
+
+
+
+
+loaded(()=>{
+    b_in=new finder("#in-bright")
+    s_in=new finder("#in-sepia")
+    bl_in=new finder("#in-blur")
+    c_in=new finder("#in-contrast")
+    g_in=new finder("#in-gray")
+    h_in=new finder("#in-hue")
+    st_in=new finder("#in-saturate")
+    inv_in=new finder("#in-invert")
+    o_in=new finder("#in-opacity")
+    src=new finder("#src-inp")
+    img=new finder("#target-img")
+    
+})
+
+preLoadedImages=[
+"https://images.unsplash.com/photo-1531366936337-7c912a4589a7?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=1050&q=80",
+"https://images.unsplash.com/photo-1542773998-9325f0a098d7?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1051&q=80",
+"https://images.unsplash.com/photo-1493238792000-8113da705763?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=1050&q=80",
+"https://images.unsplash.com/photo-1504674900247-0877df9cc836?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=1050&q=80",
+"https://preview.redd.it/ibhzio4f0js21.jpg?width=640&crop=smart&auto=webp&s=b00bfea5f58994fe1db7d35069d933001744e3ac",
+"https://images.unsplash.com/photo-1494905998402-395d579af36f?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=1050&q=80"
+,"https://images.unsplash.com/photo-1606152537426-33511d5b079d?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=1000&q=80"
+]
+
+
+
+function edit(){
+    img.style("filter",`    brightness(${b_in.val()}%)
+sepia(${s_in.val()}%)  
+blur(${bl_in.val()}px)    
+contrast(${c_in.val()}%)  
+grayscale(${g_in.val()}%) 
+hue-rotate(${h_in.val()}deg) 
+saturate(${st_in.val()}%)
+invert(${inv_in.val()}%)
+opacity(${o_in.val()}%)
+    `)
+}
+
+function reset(){
+
+    img.style("filter","none")
+    b_in.val("100")
+    s_in.val("0")
+    bl_in.val("0")
+    c_in.val("100")
+    g_in.val("0")
+    h_in.val("0")
+    st_in.val("100")
+    inv_in.val("0")
+    o_in.val("100")
+    Toast("image filters reseted !","var(--green)")
+}
+
+function cha(){
+
+if(src.val().match(/(https?:\/\/[^\s]+)/g) && src.val()!=""){
+    img.org().src=src.val()
+    src.val("")
+    Toast("image changed",'var(--lime)')
+}else{
+    Toast("please enter a valid url","var(--red)")
+    src.val("")
+}
+}
+
+function getCode(s){
+if(s=="full"){
+    return `<img src=${img.org().src}         style="filter:brightness(${b_in.val()}%) sepia(${s_in.val()}%)  blur(${bl_in.val()}px)    contrast(${c_in.val()}%)  grayscale(${g_in.val()}%) hue-rotate(${h_in.val()}deg) saturate(${st_in.val()}%) invert(${inv_in.val()}%) opacity(${o_in.val()}%);transform:rotate(${ydeg-90}deg)"/>`}else{
+
+return `filter:brightness(${b_in.val()}%) sepia(${s_in.val()}%)  
+blur(${bl_in.val()}px)    
+contrast(${c_in.val()}%)  
+grayscale(${g_in.val()}%) 
+hue-rotate(${h_in.val()}deg) 
+saturate(${st_in.val()}%)
+invert(${inv_in.val()}%)
+opacity(${o_in.val()}%);
+transform:rotate(${ydeg-90}deg)`
+    }
+    
+}
+
+i=1
+
+function swaparoo(){
+    
+    img.attr("src",preLoadedImages[i])
+    i+=1
+    if(i>=preLoadedImages.length){
+        i=0
+    }
+    Toast("image changed")
+    
+}
+
+
+ydeg=0
+function rotation(){
+ if(ydeg==0){
+        ydeg+=90
+    }
+    img.style("transform",`rotate(${ydeg}deg)`)
+    ydeg+=90
+   
+}
+
+
+function openUp(){
+    img.toggleClass("opr")
+    new finder("body").toggleClass("wrap-mega")
+    
+    
+    
+    
+}
+    </script>
+    
+    </body>
+</html>
