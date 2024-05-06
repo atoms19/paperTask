@@ -3,7 +3,7 @@
   "name":"todo-list: minimalist task board ",
   "description":"a fast and easy to use todo app with minimalist look and feel",
   "display":"standalone",
-  "background":"#444444",
+  "background_color":"#444444",
   "theme_color":"#9b79db",
  "icons":[{"src":"./android-chrome-192x192.png","sizes":"192x192","type":"image/png"},{"src":"./android-chrome-512x512.png","sizes":"512x512","type":"image/png"}]
 
