@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>dom home</title>
+    <title>todo-list</title>
 </head>
 <body>
   
@@ -18,7 +18,7 @@ el('link','',{
 
   
 let taskname=reactable('')
-let tasks=reactable(JSON.parse(localStorage.tasks))
+let tasks=reactable(JSON.parse(localStorage.tasks)||[{name:"make your first todo",done:false},{name:"complete your first task",done:false}])
 el('form')
   ._el('fieldset','',{
     role:'group'
