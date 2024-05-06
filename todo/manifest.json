@@ -1,0 +1,9 @@
+{
+"short_name":""todo list",
+  "name":"todo-list: minimalist task board "
+  "description":"a fast and easy to use todo app with minimalist look and feel",
+  "display":"standalone",
+  "theme_color":"#9b79db",
+  "icons":[]
+
+}
