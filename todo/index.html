@@ -47,7 +47,13 @@ el('form')
   
 el('ul').style({listStyle:"none"}).loops(tasks,(obj,p)=>{
   p.
-    _el('li').
+    _el('li').style({
+      width:'100%',
+      display:'flex',
+      justifyContent:'space-between',
+      alignItems:'center',
+      
+    }).
       _el('input','',{
         type:'checkbox',
        
