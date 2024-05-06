@@ -1,7 +1,7 @@
 {
 "short_name":"todo list",
   "name":"todo-list: task board ",
-  "scope":"https://atoms19.gitub.io/todo",
+  "scope":"https://atoms19.github.io/todo",
   "start_url": "https://atoms19.github.io/todo/index.html",
   "description":"a fast and easy to use todo app with minimalist look and feel",
   "display":"standalone",
