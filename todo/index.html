@@ -18,7 +18,7 @@ el('link','',{
 
   
 let taskname=reactable('')
-let tasks=reactable(JSON.parse(localStorage.tasks||[{name:"make your first todo",done:false},{name:"complete your first task",done:false}]))
+let tasks=reactable(localStorage.tasks?JSON.parse(localStorage.tasks):[{name:"make your first todo",done:false},{name:"complete your first task",done:false}])
 el('form')
   ._el('fieldset','',{
     role:'group'
