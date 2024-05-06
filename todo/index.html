@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>dom home</title>
+</head>
+<body>
+  
+<script src="https://cdn.jsdelivr.net/gh/atoms19/dominity.js@latest/src/DOMINITY.js"></script>
+<script>
+
+el('link','',{
+  href:'https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.min.css'
+  ,rel:'stylesheet'
+})
+
+
+  
+let taskname=reactable('')
+let tasks=reactable(JSON.parse(localStorage.tasks))
+el('form')
+  ._el('fieldset','',{
+    role:'group'
+  }).
+    _el('input','',{
+      type:'text'
+      ,placeHolder:'enter task'
+      ,id:'infield'
+    }).modal(taskname).$end().
+    _el('input','add task',{
+      type:'submit'
+    }).$end()
+  .$end().
+  checkFor('submit',(e)=>{
+    e.preventDefault()
+    if(taskname.value !=''){
+      tasks.value.push({
+        name:taskname.get(),
+        done:false
+      })
+      tasks.update()
+      $el('#infield').value('')
+      
+    }
+  })
+  
+el('ul').loops(tasks,(obj,p)=>{
+  p.
+    _el('li').
+      _el('input','',{
+        type:'checkbox',
+       
+      }).attr(obj.done?('checked'):'unchecked','').checkFor('input',()=>{
+        obj.done=!obj.done
+        tasks.setProp('done',obj.done)
+        
+      })
+      .$end().
+      _el('span',obj.name).style({
+        marginRight:'2rem',
+        textDecoration:obj.done?'line-through':'none'
+      }).$end().
+      _el('button','x').class('outline').onClick((s)=>{
+ tasks.set(tasks.value.filter(ob=>{
+   return ob!=obj
+ }))
+      })
+    
+})
+
+
+//updating the localstorage each time tasks is updated
+tasks.subscribe(()=>{
+   
+ localStorage.tasks=JSON.stringify(tasks.value)
+ 
+})
+  
+</script>
+</body>
+</html>
