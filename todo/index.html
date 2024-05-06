@@ -16,68 +16,122 @@ el('link','',{
 })
 
 
-  
+
+//component task item
+function TaskItem(task){
+    return el('li').style({
+        width:'100%',
+        display:'flex',
+        justifyContent:'space-between',
+        alignItems:'center',
+        padding:'0.5rem 1rem'
+        
+      }).
+        _el('input','',{
+          type:'checkbox',
+         
+        }).attr(task.done?('checked'):'unchecked','').checkFor('input',()=>{
+          task.done=!task.done
+          tasks.setProp('done',task.done)
+          
+        })
+        .$end().
+        _el('span',task.name).style({
+          marginRight:'2rem',
+          textDecoration:task.done?'line-through':'none'
+        }).onClick(()=>{
+          MoreInfoItem(task)
+        }).$end().
+        _el('button',{ariaLabel:'close'}).html(`<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill="currentColor" class="bi bi-x-lg" viewBox="0 0 16 16">
+        <path d="M2.146 2.854a.5.5 0 1 1 .708-.708L8 7.293l5.146-5.147a.5.5 0 0 1 .708.708L8.707 8l5.147 5.146a.5.5 0 0 1-.708.708L8 8.707l-5.146 5.147a.5.5 0 0 1-.708-.708L7.293 8z"/>
+      </svg>`).class('outline').style({
+          padding:'0.3rem 0.52rem'
+      }).onClick((s)=>{
+   tasks.set(tasks.value.filter(ob=>{
+     return ob!=task
+   }))
+        }).$end()
+
+}
+
+//modal pop up
+function MoreInfoItem(task){
+  let content=reactable(task.note).as('s')
+  content.subscribe((d)=>{
+      task['note']=d.value
+      tasks.update()
+  })
+content.update()
+  return  el('dialog',{open:''}). 
+        _el('article'). 
+            _el('header'). 
+              _el('button',{ariaLabel:'close',rel:'prev'}).onClick(s=>{
+                s.parent().parent().parent().remove()
+              }).$end(). 
+              _el('p')._el('strong',`📝 ${task.name}`).$end().$end()
+            .$end().
+        _el('textarea',{
+            placeHolder:'type a note'
+        }).style({
+          height:'8rem'
+        }).model(content).$end(). 
+        _el('span',`created on: ${task.createdOn}`).$end().
+        _el('footer').$end(). 
+    $end()
+    
+
+}
+
+let introTasks=[]
+
+
 let taskname=reactable('')
-let tasks=reactable(localStorage.tasks?JSON.parse(localStorage.tasks):[{name:"make your first todo",done:false},{name:"complete your first task",done:false}])
+let tasks=reactable(localStorage.tasks?JSON.parse(localStorage.tasks):introTasks)
 el('form')
-  ._el('fieldset','',{
+  ._el('fieldset',{
     role:'group'
   }).
-    _el('input','',{
+    _el('input',{
       type:'text'
       ,placeHolder:'enter task'
-      ,id:'infield'
-    }).modal(taskname).$end().
-    _el('input','add task',{
-      type:'submit'
+      ,autocomplete:'off'
+    }).model(taskname).$end().
+    _el('input',{
+      type:'submit',
+      value:'add task'
+    
     }).$end()
   .$end().
   checkFor('submit',(e)=>{
     e.preventDefault()
     if(taskname.value !=''){
+      let currentDate=new Date()
       tasks.value.push({
         name:taskname.get(),
-        done:false
+        done:false,
+        createdOn:`${currentDate.toLocaleDateString('en-GB')}      ${currentDate.toLocaleTimeString('en-US')}`,
+        note:''
       })
       tasks.update()
-      $el('#infield').value('')
-      
+      taskname.set('')   
     }
   })
   
 el('ul').style({
   listStyle:'none',
   padding:'0px',
+  paddingTop:'1rem',
     margin:'0px'
 }).loops(tasks,(obj,p)=>{
-  p.
-    _el('li').style({
-      width:'100%',
-      display:'flex',
-      justifyContent:'space-between',
-      alignItems:'center',
-      
-    }).
-      _el('input','',{
-        type:'checkbox',
-       
-      }).attr(obj.done?('checked'):'unchecked','').checkFor('input',()=>{
-        obj.done=!obj.done
-        tasks.setProp('done',obj.done)
-        
-      })
-      .$end().
-      _el('span',obj.name).style({
-        marginRight:'2rem',
-        textDecoration:obj.done?'line-through':'none'
-      }).$end().
-      _el('button','x').class('outline').onClick((s)=>{
- tasks.set(tasks.value.filter(ob=>{
-   return ob!=obj
- }))
-      })
+  
+    TaskItem(obj).addTo(p)
     
-})
+}).$end()
+
+
+let noTaskMsg= el('hgroup').style({textAlign:'center',padding:'2rem'}).
+_el('h5','you have no pending tasks').$end()
+._el('p','add a new task by entering the name of task in the field above').$end()
 
 
 //updating the localstorage each time tasks is updated
@@ -85,7 +139,14 @@ tasks.subscribe(()=>{
    
  localStorage.tasks=JSON.stringify(tasks.value)
  
+
+    noTaskMsg.showIf(tasks.value.length==0)
+  
+ 
 })
+tasks.update()
+
+
   
 </script>
 </body>
