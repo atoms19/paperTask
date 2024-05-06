@@ -1,6 +1,7 @@
 {
 "short_name":"todo list",
   "name":"todo-list: task board ",
+  "start_url": "/",
   "description":"a fast and easy to use todo app with minimalist look and feel",
   "display":"standalone",
   "background_color":"#444444",
