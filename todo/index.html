@@ -45,7 +45,10 @@ el('form')
     }
   })
   
-el('ul').style({listStyle:"none"}).loops(tasks,(obj,p)=>{
+el('ul').style({
+  listStyle:'none',
+  padding:''
+}).loops(tasks,(obj,p)=>{
   p.
     _el('li').style({
       width:'100%',
