@@ -1,6 +1,7 @@
 {
 "short_name":"todo list",
   "name":"todo-list: task board ",
+  "scope":"/",
   "start_url": "/todo/index.html",
   "description":"a fast and easy to use todo app with minimalist look and feel",
   "display":"standalone",
