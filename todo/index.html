@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>todo-list</title>
 </head>
-<body>
+<body class="container">
   
 <script src="https://cdn.jsdelivr.net/gh/atoms19/dominity.js@latest/src/DOMINITY.js"></script>
 <script>
@@ -45,7 +45,7 @@ el('form')
     }
   })
   
-el('ul').loops(tasks,(obj,p)=>{
+el('ul').style({listStyle:"none"}).loops(tasks,(obj,p)=>{
   p.
     _el('li').
       _el('input','',{
