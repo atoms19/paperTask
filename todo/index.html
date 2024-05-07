@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="fast and easy to use todo lsit app">
-    <meta name="theme-color" content="#aa5bc7"/>
+    <meta name="theme-color" content="#333240"/>
     <title>todo-list</title>
     <link href='https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.min.css' rel="stylesheet"/>
     <link rel="apple-touch-icon" sizes="180x180" href="./apple-touch-icon.png">
@@ -145,7 +145,8 @@ function taskCompletionFeedBack(){
 }
 
 
-let introTasks=[]
+let introTasks=JSON.parse([{"name":"welcome to todo-list🎉🎉","done":false,"createdOn":"","note":"","priority":"no priority"},{"name":"tap on task's name to see task options 👆","done":false,"createdOn":"","note":"","priority":"no priority"},{"name":"try adding a note to the task from options 📝","done":false,"createdOn":"","note":"i am a note","priority":"no priority"},{"name":"change priority of a task from options ✅","done":","note":"","priority":"alpha"},{"name":"try adding a new task and set its priority and a note","done":false,"createdOn":"","note":"","priority":"no priority"},{"name":"congrats u completed the tour ✅🎉👻","done":false,"createdOn":"","note":"","priority":"no priority"}]`)
+
 
 let sound=new Audio('./success.mp3')
 let taskname=reactable('')
