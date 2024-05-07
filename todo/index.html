@@ -147,7 +147,7 @@ function taskCompletionFeedBack(){
 
 let introTasks=[]
 
-let sound=new Audio('/success.mp3')
+let sound=new Audio('./success.mp3')
 let taskname=reactable('')
 let tasks=reactable(localStorage.tasks?JSON.parse(localStorage.tasks):introTasks)
 el('form').style({
