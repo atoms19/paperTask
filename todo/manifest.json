@@ -1,12 +1,12 @@
 {
 "short_name":"todo list",
   "name":"todo-list: task board ",
-  "scope":"https://atoms19.github.io/todo",
-  "start_url": "https://atoms19.github.io/todo/index.html",
+  "scope":"/todo",
+  "start_url": "/todo/index.html",
   "description":"a fast and easy to use todo app with minimalist look and feel",
   "display":"standalone",
   "background_color":"#ffffff",
   "theme_color":"#9b79db",
- "icons":[{"src":"/todo/android-chrome-192x192.png","sizes":"192x192","type":"image/png"},{"src":"/todo/android-chrome-512x512.png","sizes":"512x512","type":"image/png"}]
+ "icons":[{"src":"/todo/icons/android-chrome-192x192.png","sizes":"192x192","type":"image/png"},{"src":"/todo/icons/android-chrome-512x512.png","sizes":"512x512","type":"image/png"}]
 
 }
