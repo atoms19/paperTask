@@ -3,6 +3,8 @@ import {tasks} from '../app.js'
 export default function MoreInfoItem(task){
     let content=reactable(task.note).as('s')
     let priority=reactable(task.priority)
+    let due=reactable(task.due)
+    let habit=reactable(task.isHabit)
     content.subscribe((d)=>{
         task['note']=d.value
         tasks.update()
@@ -13,6 +15,19 @@ export default function MoreInfoItem(task){
         tasks.update()
     })
     priority.update()
+    due.subscribe((d)=>{
+      task['due']=d.value
+      tasks.update()
+      
+    })
+    due.update()
+    habit.subscribe((d)=>{
+      task['isHabit']=d.value
+      tasks.update()
+      
+      
+    })
+    habit.update()
     
     let priorityTAGs=reactable(['no priority','alpha','beta','gama','sigma'])
     return  el('dialog',{open:''}). 
@@ -35,8 +50,20 @@ export default function MoreInfoItem(task){
                   _el("option",p).$end()
               }).model(priority).$end()
           .$end().
-          _el('span',`created on: ${task.createdOn}`).$end().
-          _el('footer').$end(). 
+          _el('label','notify (due date)'). //dropdown
+          _el('input',{ariaLabel:'select due date',type:"datetime-local"}).model(due).$end()
+        .$end().
+        _el('label','habbit task(reccuring)'). //dropdown
+        _el('input',{ariaLabel:'toggling habbit',id:'h',name:'habbit',role:'switch',type:"checkbox"}). 
+        style({
+          marginLeft:'1rem'
+        }).model(habit)
+        .$end()
+      .$end().
+          _el('footer')._el('span',`created on: ${task.createdOn}`).style({
+            color:'var(--pico-muted-color)'
+          }).$end().
+          $end(). 
       $end()
       
     
