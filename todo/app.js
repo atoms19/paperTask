@@ -4,13 +4,11 @@ import TaskItem from "./components/taskItem.js";
 
 
   
-  let introTasks=[{name:'welcome to todo 🎉🎉',done:false,createdOn:'',note:'',priority:""},{name:'tap on a task to add notes/priority to it📝',done:'',createdOn:'',note:"",priority:""}]
-  
-
+  let introTasks='[{"name":"welcome to todo 🎉🎉","done":false,"createdOn":"","note":"","priority":""},{"name":"tap on a task to add notes/priority to it📝","done":"","createdOn":"","note":"","priority":""},{"name":"welcome to aw-tasks 🎉","done":false,"createdOn":"15/05/2024      1:31:47 AM","note":"","priority":"no priority","due":"2040-10-23T00:00","isHabit":false},{"name":"tap on name of todo👆 ","done":false,"createdOn":"15/05/2024      1:31:47 AM","note":"","priority":"no priority","due":"2050-03-12T12:02","isHabit":false}]'
   
   
   let taskname=reactable('')
-  export let tasks=reactable(localStorage.tasks?JSON.parse(localStorage.tasks):introTasks)
+  export let tasks=reactable(localStorage.tasks?JSON.parse(localStorage.tasks):JSON.parse(introTasks))
   export let sound=new Audio('./resources/success.mp3')
   sound.preload="auto"
  
