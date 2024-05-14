@@ -33,12 +33,17 @@ el("hgroup",{class:'container'}).
     return tasks.value.filter((t)=>{
 
 
-      return new Date()<new Date(t.due)
+      return currentDate<new Date(t.due)
          })
   })
   let yesterday=reactable().deriveFrom(tasks,(task)=>{
+    
     return tasks.value.filter((t)=>{
-      return new Date()>new Date(t.due)
+      if(t.isHabit){
+        t.due=defaultDue
+        t.done=false
+      }
+      return currentDate>new Date(t.due)
          })
   })
 
