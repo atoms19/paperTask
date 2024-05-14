@@ -60,12 +60,13 @@ export default function MoreInfoItem(task){
         }).model(habit)
         .$end()
       .$end().
+      _el('p',"your streak "+task.streak+" days").showIf(task.streak!=undefined).$end().
           _el('footer')._el('span',`created on: ${task.createdOn}`).style({
             color:'var(--pico-muted-color)'
           }).$end().
           $end(). 
       $end()
-      
+  
     
     }
     

@@ -13,6 +13,7 @@ import TaskItem from "./components/taskItem.js";
   sound.preload="auto"
  
   let currentDate=new Date()
+  currentDate.setUTCDate(currentDate.getUTCDate()+4)
   let defaultDue=new Date()
   defaultDue.setUTCDate(currentDate.getUTCDate()+2)
   defaultDue.setUTCHours(0,0,0)
@@ -39,9 +40,14 @@ el("hgroup",{class:'container'}).
   let yesterday=reactable().deriveFrom(tasks,(task)=>{
     
     return tasks.value.filter((t)=>{
-      if(t.isHabit){
+      if(t.isHabit && (currentDate>new Date(t.due))){
         t.due=defaultDue
-        t.done=false
+        if(t.done!=undefined){
+          !t.streak?t.streak=1:t.streak+=1
+          t.done=false
+        }else{
+          t.streak=0
+        }
       }
       return currentDate>new Date(t.due)
          })
