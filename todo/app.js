@@ -13,7 +13,7 @@ import TaskItem from "./components/taskItem.js";
   sound.preload="auto"
  
   let currentDate=new Date()
-  currentDate.setUTCDate(currentDate.getUTCDate()+4)
+  //currentDate.setUTCDate(currentDate.getUTCDate()+m) for testing pourposes
   let defaultDue=new Date()
   defaultDue.setUTCDate(currentDate.getUTCDate()+2)
   defaultDue.setUTCHours(0,0,0)
@@ -42,8 +42,9 @@ el("hgroup",{class:'container'}).
     return tasks.value.filter((t)=>{
       if(t.isHabit && (currentDate>new Date(t.due))){
         t.due=defaultDue
-        if(t.done!=undefined){
-          !t.streak?t.streak=1:t.streak+=1
+        if(t.streak==undefined){t.streak=0}
+        if(t.done){
+          t.streak+=1
           t.done=false
         }else{
           t.streak=0
