@@ -28,6 +28,6 @@ self.addEventListener('fetch' ,async (e)=>{
       }
       return networkRe
     }catch(err){
-        document.write('UNEXPECTED ERROR: PLEASE CONTACT SERVICES')
+        console.log('UNEXPECTED ERROR: PLEASE CONTACT SERVICES:',err)
     }
 })
