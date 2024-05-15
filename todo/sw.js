@@ -2,7 +2,6 @@ self.addEventListener("install",async (e)=>{
     let cache=await caches.open('offline-save')
     await cache.addAll([
         
-            '/',
             '/index.html',
             '/app.js',
             '/components/',// Cache entire folder
