@@ -1,33 +1,64 @@
-self.addEventListener("install",async (e)=>{
-    let cache=await caches.open('offline-save')
-    await cache.addAll([
-        
-            '/index.html',
-            '/app.js',
-            '/components/',// Cache entire folder
-            '/resources/', // Cache entire folder
-            '/icons/', // Cache entire folder
-          
-    ])
-})
+// Instantly update the service worker if available
+self.skipWaiting();
 
-self.addEventListener('fetch' ,async (e)=>{
-    try{
-      if(!navigator.onLine){
-        let response=await caches.match(e.request)
-        if (response){
-            return response
+const cacheName = "aw-tasks-v1";
+const dynamicCacheName = "aw-tasks-dynamic-v1";
+const paths = [
+  "/",
+  "/index.html",
+  "/app.js",
+  "/components/",
+  "/manifest.json",
+"/icons/",
+"/resources/"
+];
+
+self.addEventListener("install", function (res) {
+  res.waitUntil(
+    caches.open(cacheName).then((cache) => {
+      return cache.addAll(paths);
+    })
+  );
+});
+
+self.addEventListener("activate", function (ent) {
+  ent.waitUntil(
+    caches.keys().then(function (cacheNames) {
+      return Promise.all(
+        cacheNames.map(function (cacheName) {
+          if ([cacheName, dynamicCacheName].indexOf(cacheName) === -1) {
+            return caches.delete(cacheName);
+          }
+        })
+      );
+    })
+  );
+});
+
+self.addEventListener("fetch", function (event) {
+  event.respondWith(
+    caches.match(event.request).then(function (response) {
+      // Cache hit - return response
+      if (response) {
+        return response;
+      }
+
+      return fetch(event.request).then(function (response) {
+        // Check if we received a valid response
+        if (!response || response.status !== 200 || response.type !== "basic") {
+          return response;
         }
-      }
 
-      let networkRe=await fetch(e.request) //geting response from network
-      if(networkRe && networkRe.ok){
-      const cache = await caches.open('offline-save'); //saving cache for future
-      await cache.put(e.request, networkRe.clone());
+        if (event.request.url.startsWith("http")) {
+          var responseToCache = response.clone();
 
-      }
-      return networkRe
-    }catch(err){
-        console.log('UNEXPECTED ERROR: PLEASE CONTACT SERVICES:',err)
-    }
-})
+          caches.open(dynamicCacheName).then(function (cache) {
+            cache.put(event.request, responseToCache);
+          });
+        }
+
+        return response;
+      });
+    })
+  );
+});
