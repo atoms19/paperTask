@@ -148,3 +148,8 @@ el("hgroup",{class:'container'}).
   
   })
   tasks.update()
+
+
+  if('serviceWorker' in navigator){
+   navigator.serviceWorker.register('./sw.js')
+  }
