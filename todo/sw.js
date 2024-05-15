@@ -7,10 +7,7 @@ const paths = [
   "/",
   "/index.html",
   "/app.js",
-  "/components/",
   "/manifest.json",
-"/icons/",
-"/resources/"
 ];
 
 self.addEventListener("install", function (res) {
