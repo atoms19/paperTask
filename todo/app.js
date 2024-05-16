@@ -15,8 +15,9 @@ import TaskItem from "./components/taskItem.js";
   let currentDate=new Date()
   //currentDate.setUTCDate(currentDate.getUTCDate()+m) for testing pourposes
   let defaultDue=new Date()
-  defaultDue.setUTCDate(currentDate.getUTCDate()+2)
-  defaultDue.setUTCHours(0,0,0)
+  defaultDue.setHours(0,0,0)
+  defaultDue.setDate(currentDate.getDate()+1)
+  
   defaultDue=defaultDue.toISOString().slice(0,16)
   
 
