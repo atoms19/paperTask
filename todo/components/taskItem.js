@@ -22,6 +22,7 @@ export default function TaskItem(task){
         display:'flex',
         justifyContent:'space-between',
         alignItems:'center',
+  
         padding:'0.5rem 1rem'
         
       }).
@@ -43,7 +44,8 @@ export default function TaskItem(task){
         _el('span',task.name).style({
           textDecoration:task.done?'line-through':'none',
           opacity:task.done?'0.5':'1',
-          textAlign:'center'
+          textAlign:'center',
+          cursor:"pointer"
         }).onClick(()=>{
           MoreInfoItem(task) //model popup being triggered
         }).addChild(priorityTagItem(task.priority).style({
@@ -58,6 +60,13 @@ export default function TaskItem(task){
           alignItems:'center',
           justifyContent:'center'
       }).onClick((s)=>{
+    if(task.note.trim()!='' || task.streak>0){
+      let ans=confirm('this task has a note inside it ?,mind opening and looking before deleting')
+      if(ans==true){
+        MoreInfoItem(task)
+        return
+      }
+    }
    tasks.set(tasks.value.filter(ob=>{
      return ob!=task
    }))

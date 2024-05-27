@@ -19,7 +19,7 @@ export default function priorityTagItem(p){
       backgroundColor:color,
       padding:'0.125rem 0.25rem',
       fontSize:'0.7rem',
-      color:'rgba(0,0,0,0.7)',
+      color:'rgba(255,255,255,0.7)',
       borderRadius:'0.3rem',
       fontWeight:'500',
       marginLeft:'0.5rem',
