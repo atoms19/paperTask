@@ -1,14 +1,13 @@
-import TaskItem from "./taskItem"
-export default function List(task,listName){
+import TaskItem from "./taskItem.js";
+
+export default function List(tasks,listName){
     return (
-        el('details').style({
-        marginTop:'4rem'
-      }).
-        _el('summary','over due tasks').$end(). 
-        _el('p').loops(yesterday,(obj,p)=>{
-          if(!obj.done){
+        el('details').
+        _el('summary',listName).$end(). 
+        _el('p').loops(tasks,(obj,p)=>{
+          if(obj.list==listName){
             TaskItem(obj).addTo(p)
           }
-        }).$end()
+        }).$end().showIf(tasks,(d)=>d.filter(obj=>obj.list==listName).length>0)
     )
 }

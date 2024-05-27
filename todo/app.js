@@ -1,6 +1,6 @@
 import TaskItem from "./components/taskItem.js";
 import { Sidebar } from "./components/sidebar.js";
-
+import  List from './components/list.js'
 
 
 
@@ -21,9 +21,11 @@ let app=el('section').style({
   
   
   let taskname=reactable('')
+  
   export let tasks=reactable(localStorage.tasks!=undefined?JSON.parse(localStorage.tasks):[])
   export let sound=new Audio('./resources/success.mp3')
   sound.preload="auto"
+  let lists=reactable(localStorage.lists!=undefined?JSON.parse(localStorage.lists):[])
  
   let currentDate=new Date()
   //currentDate.setUTCDate(currentDate.getUTCDate()+m) for testing pourposes
@@ -52,7 +54,7 @@ el("hgroup").addTo(app).
     return tasks.value.filter((t)=>{
 
 
-      return currentDate<new Date(t.due) 
+      return currentDate<new Date(t.due) && !t.list
          })
   })
 
@@ -105,17 +107,32 @@ el("hgroup").addTo(app).
   .$end().
   checkFor('submit',(e)=>{
     e.preventDefault()
+    let listName=''
+    let taskNameE=''
     if(taskname.value !=''){
-      
+       let indexOfSplit=taskname.value.search("::")
+
+      if(indexOfSplit!=-1){
+        listName=taskname.value.slice(0,indexOfSplit)
+        taskNameE=taskname.value.slice(indexOfSplit+2)
+        
+        
+        if(!lists.value.includes(listName)){
+          lists.set([...lists.value,listName])
+        }
+      }else{
+        taskNameE=taskname.get()
+      }
       
       tasks.value.push({
-        name:taskname.get(),
+        name:taskNameE,
         done:false,
         createdOn:`${currentDate.toLocaleDateString('en-GB')}      ${currentDate.toLocaleTimeString('en-US')}`,
         note:'',
         priority:'no priority',
         due:defaultDue,
-        isHabit:false
+        isHabit:false,
+        list:listName
       })
       tasks.update()
       taskname.set('')   
@@ -167,6 +184,9 @@ el("hgroup").addTo(app).
     }).$end().showIf(yesterday,(d)=>d.filter(obj=>obj.done).length>0)
     
     .$end()
+    ._el('div').loops(lists,(name,parent)=>{
+      parent._el(List(tasks,name))
+    })
 
 Sidebar(app)
   
@@ -181,6 +201,11 @@ Sidebar(app)
   
   })
   tasks.update()
+  lists.subscribe(()=>{
+   
+    localStorage.lists=JSON.stringify(lists.value)
+    
+    })
 
 
   if('serviceWorker' in navigator){
