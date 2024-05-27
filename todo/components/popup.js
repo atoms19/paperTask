@@ -9,34 +9,45 @@ export default function MoreInfoItem(task){
         task['note']=d.value
         tasks.update()
     })
-    content.update()
+    
     priority.subscribe((d)=>{
         task['priority']=d.value
         tasks.update()
     })
-    priority.update()
+    
     due.subscribe((d)=>{
       task['due']=d.value
       tasks.update()
       
     })
-    due.update()
+
     habit.subscribe((d)=>{
       task['isHabit']=d.value
       tasks.update()
-      
-      
     })
-    habit.update()
+  
     
     let priorityTAGs=reactable(['no priority','alpha','beta','gama','sigma'])
-    return  el('dialog',{open:''}). 
-          _el('article'). 
-              _el('header'). 
+    return  el('dialog',{open:''}).
+              onClick((s)=>{
+                s.remove()
+              }). 
+          _el('article').onClick((s,e)=>{
+            e.stopPropagation()
+          }).
+              _el('header').
                 _el('button',{ariaLabel:'close',rel:'prev'}).onClick(s=>{
                   s.parent().parent().parent().remove()
                 }).$end(). 
-                _el('p')._el('strong',`📝 ${task.name}`).$end()
+                _el('p')._el('strong',`📝 ${task.name}`).$end().
+                _el('p',"🔥streak: "+(task.streak||'0')+" days").style({
+                  fontSize:"0.8rem",
+                  marginLeft:'1.35rem',
+                  marginTop:'0.4rem',
+                  display:'inline',
+                  width:'40%',
+                  marginBottom:'0px'
+                }).attr('data-tooltip','will be updated on 12am').showIf(habit).$end()
                 .$end()
               .$end().
           _el('textarea',{
@@ -51,7 +62,7 @@ export default function MoreInfoItem(task){
               }).model(priority).$end()
           .$end().
           _el('label','notify (due date)'). //dropdown
-          _el('input',{ariaLabel:'select due date',type:"datetime-local"}).model(due).$end()
+          _el('input',{ariaLabel:'select due date',type:"datetime-local",min:new Date().toISOString().slice(0,16)}).model(due).$end()
         .$end().
         _el('label','habbit task(reccuring)'). //dropdown
         _el('input',{ariaLabel:'toggling habbit',id:'h',name:'habbit',role:'switch',type:"checkbox"}). 
@@ -60,7 +71,6 @@ export default function MoreInfoItem(task){
         }).model(habit)
         .$end()
       .$end().
-      _el('p',"your streak "+task.streak+" days").showIf(task.streak!=undefined).$end().
           _el('footer')._el('span',`created on: ${task.createdOn}`).style({
             color:'var(--pico-muted-color)'
           }).$end().

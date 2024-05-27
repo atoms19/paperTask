@@ -1,30 +1,47 @@
 import TaskItem from "./components/taskItem.js";
+import { Sidebar } from "./components/sidebar.js";
 
+
+
+
+
+//app-----
+let app=el('section').style({
+  position:'relative',
+  width:'90%',
+  padding:'2rem',
+  paddingTop:'0px'
+  
+})
 
 
 
   
-  let introTasks='[{"name":"welcome to todo 🎉🎉","done":false,"createdOn":"","note":"","priority":""},{"name":"tap on a task to add notes/priority to it📝","done":"","createdOn":"","note":"","priority":""},{"name":"welcome to aw-tasks 🎉","done":false,"createdOn":"15/05/2024      1:31:47 AM","note":"","priority":"no priority","due":"2040-10-23T00:00","isHabit":false},{"name":"tap on name of todo👆 ","done":false,"createdOn":"15/05/2024      1:31:47 AM","note":"","priority":"no priority","due":"2050-03-12T12:02","isHabit":false}]'
+  //let introTasks='[{"name":"welcome to todo 🎉🎉","done":false,"createdOn":"","note":"","priority":""},{"name":"tap on a task to add notes/priority to it📝","done":"","createdOn":"","note":"","priority":""},{"name":"welcome to aw-tasks 🎉","done":false,"createdOn":"15/05/2024      1:31:47 AM","note":"","priority":"no priority","due":"2040-10-23T00:00","isHabit":false},{"name":"tap on name of todo👆 ","done":false,"createdOn":"15/05/2024      1:31:47 AM","note":"","priority":"no priority","due":"2050-03-12T12:02","isHabit":false}]'
   
   
   let taskname=reactable('')
-  export let tasks=reactable(localStorage.tasks?JSON.parse(localStorage.tasks):JSON.parse(introTasks))
+  export let tasks=reactable(localStorage.tasks!=undefined?JSON.parse(localStorage.tasks):[])
   export let sound=new Audio('./resources/success.mp3')
   sound.preload="auto"
  
   let currentDate=new Date()
   //currentDate.setUTCDate(currentDate.getUTCDate()+m) for testing pourposes
-  let defaultDue=new Date()
+  let defaultDue=new Date() 
   defaultDue.setUTCHours(0,0,0)
   defaultDue.setUTCDate(currentDate.getUTCDate()+1)
-  
   defaultDue=defaultDue.toISOString().slice(0,16)
   
 
 
-el("hgroup",{class:'container'}). 
+el("hgroup").addTo(app).
   _el("h3","today").$end(). 
-  _el("p",`${currentDate.toLocaleString("en-us",{weekday:'long'}).toLowerCase()} ,${currentDate.getDate()} ${currentDate.toLocaleString("en-us",{month:'long'})}`).$end(). 
+  _el("p",`${currentDate.toLocaleString("en-us",{weekday:'long'}).toLowerCase()} ,${currentDate.getDate()} ${currentDate.toLocaleString("en-us",{month:'long'})}`)
+  .style({
+    fontSize:'0.8rem',
+    marginLeft:'0.4rem'
+  })
+  .$end(). 
   style({
     paddingTop:'2.4rem'
   })
@@ -35,9 +52,10 @@ el("hgroup",{class:'container'}).
     return tasks.value.filter((t)=>{
 
 
-      return currentDate<new Date(t.due)
+      return currentDate<new Date(t.due) 
          })
   })
+
   let yesterday=reactable().deriveFrom(tasks,(task)=>{
     
     return tasks.value.filter((t)=>{
@@ -55,17 +73,21 @@ el("hgroup",{class:'container'}).
          })
   })
 
+
   let SELECTED_VIEW=today
+
+
 
   //form fiel-----------------------------------------------------
   el('form').style({
-    position:'fixed',
+    position:'absolute',
     bottom:'0.5rem',
     width:'90%',
-    right:'50%',
-    transform:'translateX(50%)'
+    translate:'0%',
+    padding:'0rem 1rem',
+  
     
-  })
+  }).addTo(app)
   ._el('fieldset',{
     role:'group'
   }).
@@ -100,52 +122,62 @@ el("hgroup",{class:'container'}).
     }
   })
   //task area------------------------------------------------
-  el('ul').style({
+  let taskarea=el('div').style({
+    maxHeight:'77vh',
+    overflow:'auto'
+    
+  })._el('ul').style({
   listStyle:'none',
   padding:'0px',
   paddingTop:'2rem',
-    margin:'0px'
+    margin:'0px',
+ 
   }).loops(SELECTED_VIEW,(obj,p)=>{
   
     TaskItem(obj).addTo(p)
     
-  }).$end()
-  //due tasks---------------------
-  let records=
-  el('section')
+  })
+  .$end().addTo(app)
+  //due tasks-----------------------
+  
+  el('section').addTo(taskarea)
   ._el('hgroup',{id:'no-task'}).style({textAlign:'center',padding:'2rem',paddingTop:'1rem'}).
   _el('h5','you have no pending tasks').$end()
-  ._el('p','add a new task by entering the name of task in the field above').$end().$end()
-  ._el('div',{class:'container'})
-  ._el('details').style({
+  ._el('p','add a new task by entering the name of task in the field above').$end()
+  .showIf(tasks,t=>t.length==0)
+  .$end()
+  ._el('div').style({
     marginTop:'4rem'
   }).
+ _el('details').
     _el('summary','over due tasks').$end(). 
     _el('p').loops(yesterday,(obj,p)=>{
       if(!obj.done){
         TaskItem(obj).addTo(p)
       }
-    }).$end().$end().
+    }).$end().showIf(yesterday,(d)=>d.filter(obj=>!obj.done).length>0)
+    .$end().
+  
     _el('details').
     _el('summary','completed earlier').$end(). 
     _el('p').loops(yesterday,(obj,p)=>{
       if(obj.done){
         TaskItem(obj).addTo(p)
       }
-    }).$end()
+    }).$end().showIf(yesterday,(d)=>d.filter(obj=>obj.done).length>0)
+    
+    .$end()
+
+Sidebar(app)
+  
+
+  
 
 
-  
-  
-  
   //updating the localstorage each time tasks is updated
   tasks.subscribe(()=>{
    
   localStorage.tasks=JSON.stringify(tasks.value)
-  
-  
-    $el('#no-task').showIf(tasks.value.length==0)
-  
   
   })
   tasks.update()
