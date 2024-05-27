@@ -4,10 +4,10 @@ self.skipWaiting();
 const cacheName = "aw-tasks-v1";
 const dynamicCacheName = "aw-tasks-dynamic-v1";
 const paths = [
-  "/",
-  "/index.html",
-  "/app.js",
-  "/manifest.json",
+  "./index.html",
+  "./app.js",
+  "./manifest.json"
+
 ];
 
 self.addEventListener("install", function (res) {
