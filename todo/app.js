@@ -28,7 +28,7 @@ let app=el('section').style({
   let lists=reactable(localStorage.lists!=undefined?JSON.parse(localStorage.lists):[])
  
   let currentDate=new Date()
-  currentDate.setUTCDate(currentDate.getUTCDate()+4)
+  //currentDate.setUTCDate(currentDate.getUTCDate()+4)
   let defaultDue=new Date() 
   defaultDue.setUTCHours(0,0,0)
   defaultDue.setUTCDate(currentDate.getUTCDate()+1)
@@ -48,7 +48,7 @@ let views=[[currentDate,'today'],[tomorrow,'tomorrow'],[dayAfterTomorrwow,'day a
 
 let header=el("hgroup").addTo(app).onClick(()=>{
   if(sindex.value<views.length-1){
-    sindex.set(sindex.value+1)
+   // sindex.set(sindex.value+1)
   }else{
     sindex.set(0)
   }
