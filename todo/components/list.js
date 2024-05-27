@@ -2,7 +2,7 @@ import TaskItem from "./taskItem.js";
 
 export default function List(tasks,listName){
     return (
-        el('details').
+        el('details',{class:'list'}).
         _el('summary',listName).$end(). 
         _el('p').loops(tasks,(obj,p)=>{
           if(obj.list==listName){
@@ -12,3 +12,13 @@ export default function List(tasks,listName){
     )
 }
 
+el('style').html(`
+.list summary{
+  overflow:hidden;
+  padding:0.2rem;
+  border-radius:0.2rem;
+}
+
+
+
+`)

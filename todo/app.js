@@ -194,7 +194,7 @@ sindex.subscribe((p)=>{
   ._el('div').style({
     marginTop:'4rem'
   }).
- _el('details').
+ _el('details',{class:'list'}).
     _el('summary','over due tasks').$end(). 
     _el('p').loops(yesterday,(obj,p)=>{
       if(!obj.done){
@@ -203,7 +203,7 @@ sindex.subscribe((p)=>{
     }).$end().showIf(yesterday,(d)=>d.filter(obj=>!obj.done).length>0)
     .$end().
   
-    _el('details').
+    _el('details',{class:'list'}).
     _el('summary','completed earlier').$end(). 
     _el('p').loops(yesterday,(obj,p)=>{
       if(obj.done){
