@@ -11,3 +11,4 @@ export default function List(tasks,listName){
         }).$end().showIf(tasks,(d)=>d.filter(obj=>obj.list==listName).length>0)
     )
 }
+

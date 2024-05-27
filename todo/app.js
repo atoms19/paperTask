@@ -28,17 +28,39 @@ let app=el('section').style({
   let lists=reactable(localStorage.lists!=undefined?JSON.parse(localStorage.lists):[])
  
   let currentDate=new Date()
-  //currentDate.setUTCDate(currentDate.getUTCDate()+m) for testing pourposes
+  currentDate.setUTCDate(currentDate.getUTCDate()+4)
   let defaultDue=new Date() 
   defaultDue.setUTCHours(0,0,0)
   defaultDue.setUTCDate(currentDate.getUTCDate()+1)
+  let tomorrow=defaultDue
   defaultDue=defaultDue.toISOString().slice(0,16)
+  let dayAfterTomorrwow=new Date()
+  dayAfterTomorrwow.setUTCDate(tomorrow.getUTCDate()+1)
+
+  
+  
+let sindex=reactable(0)
+
+let views=[[currentDate,'today'],[tomorrow,'tomorrow'],[dayAfterTomorrwow,'day after tomorrow']]
+
+
+
+
+let header=el("hgroup").addTo(app).onClick(()=>{
+  if(sindex.value<views.length-1){
+    sindex.set(sindex.value+1)
+  }else{
+    sindex.set(0)
+  }
   
 
+})
 
-el("hgroup").addTo(app).
-  _el("h3","today").$end(). 
-  _el("p",`${currentDate.toLocaleString("en-us",{weekday:'long'}).toLowerCase()} ,${currentDate.getDate()} ${currentDate.toLocaleString("en-us",{month:'long'})}`)
+sindex.subscribe((p)=>{
+  let [SELECTED_DATE,SELECTED_VIEW_NAME]=views[sindex.get()]
+  header.html('').
+  _el("h3",SELECTED_VIEW_NAME).$end(). 
+  _el("p",`${SELECTED_DATE.toLocaleString("en-us",{weekday:'long'}).toLowerCase()} ,${SELECTED_DATE.getDate()} ${SELECTED_DATE.toLocaleString("en-us",{month:'long'})}`)
   .style({
     fontSize:'0.8rem',
     marginLeft:'0.4rem'
@@ -47,6 +69,7 @@ el("hgroup").addTo(app).
   style({
     paddingTop:'2.4rem'
   })
+})
 
   
   let today=reactable().deriveFrom(tasks,(task)=>{
@@ -56,6 +79,11 @@ el("hgroup").addTo(app).
 
       return currentDate<new Date(t.due) && !t.list
          })
+  })
+  let tomorrowView=reactable().deriveFrom(tasks,(task)=>{
+    return tasks.value.filter((t)=>{
+      
+    })
   })
 
   let yesterday=reactable().deriveFrom(tasks,(task)=>{
@@ -71,7 +99,7 @@ el("hgroup").addTo(app).
           t.streak=0
         }
       }
-      return currentDate>new Date(t.due)
+      return currentDate>new Date(t.due) && !t.list
          })
   })
 
@@ -135,7 +163,7 @@ el("hgroup").addTo(app).
         list:listName
       })
       tasks.update()
-      taskname.set('')   
+      taskname.set(listName+(listName?"::":'')+'')   
     }
   })
   //task area------------------------------------------------

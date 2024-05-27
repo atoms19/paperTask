@@ -1,5 +1,6 @@
 import {tasks} from '../app.js'
 
+
 export default function MoreInfoItem(task){
     let content=reactable(task.note).as('s')
     let priority=reactable(task.priority)
@@ -28,7 +29,10 @@ export default function MoreInfoItem(task){
   
     
     let priorityTAGs=reactable(['no priority','alpha','beta','gama','sigma'])
-    return  el('dialog',{open:''}).
+    
+
+
+      el('dialog',{open:''}).
               onClick((s)=>{
                 s.remove()
               }). 
@@ -44,6 +48,7 @@ export default function MoreInfoItem(task){
                   fontSize:"0.8rem",
                   marginLeft:'1.35rem',
                   marginTop:'0.4rem',
+                  filter:task.streak?'grayscale(0%)':'grayscale(100%)',
                   display:'inline',
                   width:'40%',
                   marginBottom:'0px'
@@ -51,7 +56,8 @@ export default function MoreInfoItem(task){
                 .$end()
               .$end().
           _el('textarea',{
-              placeHolder:'type a note'
+              placeHolder:'type a note',
+              id:'type-zone'
           }).style({
             height:'8rem'
           }).model(content).$end().
@@ -76,7 +82,9 @@ export default function MoreInfoItem(task){
           }).$end().
           $end(). 
       $end()
-  
+     
+      
+
     
     }
     

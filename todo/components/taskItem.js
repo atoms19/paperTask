@@ -60,6 +60,13 @@ export default function TaskItem(task){
           alignItems:'center',
           justifyContent:'center'
       }).onClick((s)=>{
+    if(task.note.trim()!=''){
+      let ans=confirm('this task has a note inside it ?,mind opening and looking before deleting')
+      if(ans==true){
+        MoreInfoItem(task)
+        return
+      }
+    }
    tasks.set(tasks.value.filter(ob=>{
      return ob!=task
    }))
