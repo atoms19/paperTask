@@ -1,12 +1,12 @@
 {
-"short_name":"todo list",
-  "name":"todo-list: task board ",
+"short_name":"papertask",
+  "name":"paper Task",
   "scope":"/",
   "start_url": "./index.html",
-  "description":"a fast and easy to use todo app with minimalist look and feel",
+  "description":"minimalist daily planer",
   "display":"standalone",
   "background_color":"#ffffff",
-  "theme_color":"#9b79db",
+  "theme_color":"#222222",
  "icons":[{"src":"./icons/android-chrome-192x192.png","sizes":"192x192","type":"image/png"},{"src":"./icons/android-chrome-512x512.png","sizes":"512x512","type":"image/png"}]
 
 }
