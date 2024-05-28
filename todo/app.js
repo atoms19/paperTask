@@ -1,5 +1,5 @@
 import TaskItem from "./components/taskItem.js";
-import { Sidebar } from "./components/sidebar.js";
+//import { Sidebar } from "./components/sidebar.js";
 import  List from './components/list.js'
 
 
@@ -8,25 +8,20 @@ import  List from './components/list.js'
 //app-----
 let app=el('section').style({
   position:'relative',
-  width:'90%',
+  width:'100%',
   padding:'2rem',
-  paddingTop:'0px'
-  
+  paddingTop:'0px' 
 })
 
-
-
-  
-  //let introTasks='[{"name":"welcome to todo 🎉🎉","done":false,"createdOn":"","note":"","priority":""},{"name":"tap on a task to add notes/priority to it📝","done":"","createdOn":"","note":"","priority":""},{"name":"welcome to aw-tasks 🎉","done":false,"createdOn":"15/05/2024      1:31:47 AM","note":"","priority":"no priority","due":"2040-10-23T00:00","isHabit":false},{"name":"tap on name of todo👆 ","done":false,"createdOn":"15/05/2024      1:31:47 AM","note":"","priority":"no priority","due":"2050-03-12T12:02","isHabit":false}]'
-  
   
   let taskname=reactable('')
   
   export let tasks=reactable(localStorage.tasks!=undefined?JSON.parse(localStorage.tasks):[])
   export let sound=new Audio('./resources/success.mp3')
   sound.preload="auto"
-  let lists=reactable(localStorage.lists!=undefined?JSON.parse(localStorage.lists):[])
- 
+  export let lists=reactable(localStorage.lists!=undefined?JSON.parse(localStorage.lists):[])
+ let sampler=[]
+
   let currentDate=new Date()
   //currentDate.setDate(currentDate.getDate()+3)
   let defaultDue=new Date()
@@ -37,11 +32,9 @@ let app=el('section').style({
   console.log(defaultDue)
 
   
-  
 let sindex=reactable(0)
 
 let views=[[currentDate,'today']]
-
 
 
 
@@ -114,11 +107,12 @@ sindex.subscribe((p)=>{
 
   //form fiel-----------------------------------------------------
   el('form').style({
-    position:'absolute',
-    bottom:'0.5rem',
+    position:'fixed',
+    bottom:'0',
     width:'90%',
-    translate:'0%',
-    padding:'0rem 1rem',
+    left:'50%',
+    translate:'-50%',
+    padding:'0rem 0rem',
   
     
   }).addTo(app)
@@ -150,7 +144,9 @@ sindex.subscribe((p)=>{
         
         
         if(!lists.value.includes(listName)){
-          lists.set([...lists.value,listName])
+          console.log('list creation')
+          lists.value=[...lists.value,listName]
+      
         }
       }else{
         taskNameE=taskname.get()
@@ -167,13 +163,16 @@ sindex.subscribe((p)=>{
         list:listName
       })
       tasks.update()
+      lists.update()
+      
       taskname.set(listName+(listName?"::":'')+'')   
     }
   })
   //task area------------------------------------------------
   let taskarea=el('div').style({
     maxHeight:'77vh',
-    overflow:'auto'
+    overflow:'auto',
+    marginBottom:'8rem'
     
   })._el('ul').style({
   listStyle:'none',
@@ -217,15 +216,13 @@ sindex.subscribe((p)=>{
     
     .$end()
     ._el('div').loops(lists,(name,parent)=>{
-     let ls=List(tasks,name).addTo(parent)
-    if(ls.style('display')=='none'){
-      lists.set(lists.value.filter(l=>l!=name))
-    }
-    
+         
+     let ls=List(tasks,name)
+     ls?ls.addTo(parent):lists.value=lists.value.filter(l=>l!=name)
 
     })
 
-Sidebar(app)
+
   
 
   
@@ -236,13 +233,47 @@ Sidebar(app)
    
   localStorage.tasks=JSON.stringify(tasks.value)
   
+  
   })
   tasks.update()
-  lists.subscribe(()=>{
-   
-    localStorage.lists=JSON.stringify(lists.value)
-    
- })
+ lists.subscribe(()=>{
+  localStorage.lists=JSON.stringify(lists.value)
+  console.log(lists.value)
+ }) 
+lists.update()
+//task list sharing optimiser
+function getSharedList(){
+   let url=new URL(window.location.href)
+  let q=new URLSearchParams(url.search).get('q')
+ if(q==null){
+  return
+ }
+  
+  let data=JSON.parse(q)
+  let listName=data[0]
+  let todoData=data[1]
+  let dedocdedData=todoData.map((v)=>{
+        return {name:v[0],
+        done:v[1],
+        createdOn:`${currentDate.toLocaleDateString('en-GB')}      ${currentDate.toLocaleTimeString('en-US')}`,
+        note:v[2]||'',
+        priority:'no priority',
+        due:defaultDue,
+        isHabit:false,
+        list:listName
+        }  
+  })
+  if(!lists.value.includes(listName)){
+  lists.value=[...lists.value,listName]
+  
+  tasks.set([...tasks.value,...dedocdedData])
+  lists.update()
+  history.replaceState(null,'',`/todo`)
+  }else{
+    alert('duplicate list with same name found please move or delete it or make modification to url part where name of the list is ')
+  }
+}
+getSharedList()
 
 
   if('serviceWorker' in navigator){

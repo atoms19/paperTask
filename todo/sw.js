@@ -7,7 +7,6 @@ const paths = [
   "./index.html",
   "./app.js",
   "./manifest.json"
-
 ];
 
 self.addEventListener("install", function (res) {
@@ -34,27 +33,28 @@ self.addEventListener("activate", function (ent) {
 
 self.addEventListener("fetch", function (event) {
   event.respondWith(
-    caches.match(event.request).then(function (response) {
-      // Cache hit - return response
-      if (response) {
+    fetch(event.request).then(function (response) {
+      // Check if we received a valid response
+      if (!response || response.status !== 200 || response.type !== "basic") {
         return response;
       }
 
-      return fetch(event.request).then(function (response) {
-        // Check if we received a valid response
-        if (!response || response.status !== 200 || response.type !== "basic") {
+      // Update the dynamic cache with the new response
+      const responseToCache = response.clone();
+      caches.open(dynamicCacheName).then(function (cache) {
+        cache.put(event.request, responseToCache);
+      });
+
+      return response;
+    }).catch(function () {
+      // Fetch failed (offline), fallback to cache
+      return caches.match(event.request).then(function (response) {
+        if (response) {
           return response;
+        } else {
+          // Optionally, return a fallback page if not found in cache
+          return caches.match('./index.html');
         }
-
-        if (event.request.url.startsWith("http")) {
-          var responseToCache = response.clone();
-
-          caches.open(dynamicCacheName).then(function (cache) {
-            cache.put(event.request, responseToCache);
-          });
-        }
-
-        return response;
       });
     })
   );
