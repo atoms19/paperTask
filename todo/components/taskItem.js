@@ -4,16 +4,12 @@ import {tasks,sound} from '../app.js'
 
 
 
-function taskCompletionFeedBack(){
+function taskCompletionFeedBack(e){
   sound.volume=1
   sound.play()
+  e.target.setAttribute('disabled','true')
   
   
-  setTimeout(()=>{
-      sound.pause();
-      sound.currentTime = 0;
-    }, 1000);
-
 }
 
 export default function TaskItem(task){
@@ -28,15 +24,20 @@ export default function TaskItem(task){
       }).
         _el('input','',{
           type:'checkbox',
-            ariaLabel:'complete task'
+            ariaLabel:'complete task',
+            
+          
          
         }).style({
           minWidth:'1.1rem'
-        }).attr(task.done?('checked'):'unchecked','').checkFor('input',()=>{
-          task.done=!task.done
+        }).attr(task.done?('checked'):'unchecked','').checkFor('input',(e)=>{
+          task.done=true
           tasks.setProp('done',task.done)
           if(task.done){
-            taskCompletionFeedBack()
+            if(!task.killed){
+            taskCompletionFeedBack(e)
+            task.killed=true
+            }
           }
           
         })
