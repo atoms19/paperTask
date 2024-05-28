@@ -3,7 +3,7 @@ import { Sidebar } from "./components/sidebar.js";
 import  List from './components/list.js'
 
 
-
+/* this project is fully written with dominity.js before contributing please look into atoms19/dominity.js */
 
 //app-----
 let app=el('section').style({
@@ -28,20 +28,19 @@ let app=el('section').style({
   let lists=reactable(localStorage.lists!=undefined?JSON.parse(localStorage.lists):[])
  
   let currentDate=new Date()
-  //currentDate.setUTCDate(currentDate.getUTCDate()+4)
-  let defaultDue=new Date() 
-  defaultDue.setUTCHours(0,0,0)
-  defaultDue.setUTCDate(currentDate.getUTCDate()+1)
-  let tomorrow=defaultDue
-  defaultDue=defaultDue.toISOString().slice(0,16)
-  let dayAfterTomorrwow=new Date()
-  dayAfterTomorrwow.setUTCDate(tomorrow.getUTCDate()+1)
+  //currentDate.setDate(currentDate.getDate()+3)
+  let defaultDue=new Date()
+  defaultDue.setDate(currentDate.getDate()+1)
+ // defaultDue.setMonth(5)
+  
+  defaultDue=`${defaultDue.toLocaleDateString('en-CA')}T00:00`.slice(0,16)
+  console.log(defaultDue)
 
   
   
 let sindex=reactable(0)
 
-let views=[[currentDate,'today'],[tomorrow,'tomorrow'],[dayAfterTomorrwow,'day after tomorrow']]
+let views=[[currentDate,'today']]
 
 
 
@@ -80,24 +79,29 @@ sindex.subscribe((p)=>{
       return currentDate<new Date(t.due) && !t.list
          })
   })
-  let tomorrowView=reactable().deriveFrom(tasks,(task)=>{
+  
+  /*let tomorrowView=reactable().deriveFrom(tasks,(task)=>{
     return tasks.value.filter((t)=>{
       
     })
-  })
+  })*/
 
   let yesterday=reactable().deriveFrom(tasks,(task)=>{
     
     return tasks.value.filter((t)=>{
       if(t.isHabit && (currentDate>new Date(t.due))){
-        t.due=defaultDue
+        
         if(t.streak==undefined){t.streak=0}
-        if(t.done){
+        if(t.done && (Math.abs(Math.floor((currentDate-new Date(t.due)) / (1000 * 60 * 60 * 24)))<=1)){
           t.streak+=1
           t.done=false
+          t.killed=false
         }else{
           t.streak=0
+          t.done=false
+          t.killed=false
         }
+        t.due=defaultDue
       }
       return currentDate>new Date(t.due) && !t.list
          })
@@ -213,7 +217,12 @@ sindex.subscribe((p)=>{
     
     .$end()
     ._el('div').loops(lists,(name,parent)=>{
-      parent._el(List(tasks,name))
+     let ls=List(tasks,name).addTo(parent)
+    if(ls.style('display')=='none'){
+      lists.set(lists.value.filter(l=>l!=name))
+    }
+    
+
     })
 
 Sidebar(app)
@@ -233,7 +242,7 @@ Sidebar(app)
    
     localStorage.lists=JSON.stringify(lists.value)
     
-    })
+ })
 
 
   if('serviceWorker' in navigator){
