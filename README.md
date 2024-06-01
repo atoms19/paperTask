@@ -37,8 +37,10 @@ Paper Task is a unique task management web application designed to emulate the s
 - **Assign Priority**: Use the priority dropdown to assign a badge (High, Medium, Low) to tasks for easy prioritization.
 
 ### Creating and Managing Lists
-- **Add a List**: Click on the "Add List" button to create a new list. Name the list and add tasks specific to it.
-- **Switch Between Lists**: Use the sidebar to switch between different lists and manage tasks within each list.
+- **Add a List**: Enter task in the format `listname::taskname` for eg `shopping::milk` and your list will be created use the same syntax to add to the list.
+- **Sharing Lists**: tap and hold the listname till a list menu pops up and click on the share list button,copy the url and share to anyone
+- **Spreading Lists** : all the items inside the list can be spread to today from the listmenu this will delte the list in the process
+-  **Deleting Lists** : deleting all items inside the list deletes the list
 
 ## Contributing
 Contributions are welcome! Please fork the repository and submit a pull request for any enhancements, bug fixes, or new features.
