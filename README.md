@@ -31,10 +31,10 @@ Paper Task is a unique task management web application designed to emulate the s
 ## Usage
 
 ### Creating and Managing Tasks
-- **Add a Task**: Enter a task in the input field and specify a reminder time if needed. Click "Add Task" to add it to the list.
+- **Add a Task**: Enter a task in the input field  Click "Add Task" to add it to the list.
 - **Complete a Task**: Click on a task to mark it as completed. Completed tasks will be crossed out and cannot be undone, promoting a mindful approach to task completion.
-- **Add Task Notes**: Click on the note icon next to a task to add or view detailed notes.
-- **Assign Priority**: Use the priority dropdown to assign a badge (High, Medium, Low) to tasks for easy prioritization.
+- **Add Task Notes**: Tap on the taskname to view task menu and add notes in the notes textfield.
+- **Assign Priority**: Use the priority dropdown to assign a badge (alpha, beta,gama) to tasks for easy prioritization.
 
 ### Creating and Managing Lists
 - **Add a List**: Enter task in the format `listname::taskname` for eg `shopping::milk` and your list will be created use the same syntax to add to the list.
