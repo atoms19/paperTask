@@ -1,281 +1,398 @@
-import TaskItem from "./components/taskItem.js";
-//import { Sidebar } from "./components/sidebar.js";
-import  List from './components/list.js'
-
-
-/* this project is fully written with dominity.js before contributing please look into atoms19/dominity.js */
-
-//app-----
-let app=el('section').style({
-  position:'relative',
-  width:'100%',
-  padding:'2rem',
-  paddingTop:'0px' 
-})
-
-  
-  let taskname=reactable('')
-  
-  export let tasks=reactable(localStorage.tasks!=undefined?JSON.parse(localStorage.tasks):[])
-  export let sound=new Audio('./resources/success.mp3')
-  sound.preload="auto"
-  export let lists=reactable(localStorage.lists!=undefined?JSON.parse(localStorage.lists):[])
- let sampler=[]
-
-  let currentDate=new Date()
-  //currentDate.setDate(currentDate.getDate()+3)
-  let defaultDue=new Date()
-  defaultDue.setDate(currentDate.getDate()+1)
- // defaultDue.setMonth(5)
-  
-  defaultDue=`${defaultDue.toLocaleDateString('en-CA')}T00:00`.slice(0,16)
-  console.log(defaultDue)
-
-  
-let sindex=reactable(0)
-
-let views=[[currentDate,'today']]
+import d from "https://esm.sh/dominity@6.4.6";
+let APILINK="http://localhost:3000/"
 
 
 
-let header=el("hgroup").addTo(app).onClick(()=>{
-  if(sindex.value<views.length-1){
-   // sindex.set(sindex.value+1)
-  }else{
-    sindex.set(0)
-  }
-  
-
-})
-
-sindex.subscribe((p)=>{
-  let [SELECTED_DATE,SELECTED_VIEW_NAME]=views[sindex.get()]
-  header.html('').
-  _el("h3",SELECTED_VIEW_NAME).$end(). 
-  _el("p",`${SELECTED_DATE.toLocaleString("en-us",{weekday:'long'}).toLowerCase()} ,${SELECTED_DATE.getDate()} ${SELECTED_DATE.toLocaleString("en-us",{month:'long'})}`)
-  .style({
-    fontSize:'0.8rem',
-    marginLeft:'0.4rem'
-  })
-  .$end(). 
-  style({
-    paddingTop:'2.4rem'
-  })
-})
-
-  
-  let today=reactable().deriveFrom(tasks,(task)=>{
-
-    return tasks.value.filter((t)=>{
-
-
-      return currentDate<new Date(t.due) && !t.list
-         })
-  })
-  
-  /*let tomorrowView=reactable().deriveFrom(tasks,(task)=>{
-    return tasks.value.filter((t)=>{
-      
-    })
-  })*/
-
-  let yesterday=reactable().deriveFrom(tasks,(task)=>{
-    
-    return tasks.value.filter((t)=>{
-      if(t.isHabit && (currentDate>new Date(t.due))){
-        
-        if(t.streak==undefined){t.streak=0}
-        if(t.done && (Math.abs(Math.floor((currentDate-new Date(t.due)) / (1000 * 60 * 60 * 24)))<=1)){
-          t.streak+=1
-          t.done=false
-          t.killed=false
-        }else{
-          t.streak=0
-          t.done=false
-          t.killed=false
-        }
-        t.due=defaultDue
-      }
-      return currentDate>new Date(t.due) && !t.list
-         })
-  })
-
-
-  let SELECTED_VIEW=today
-
-
-
-  //form fiel-----------------------------------------------------
-  el('form').style({
-    position:'fixed',
-    bottom:'0',
-    width:'90%',
-    left:'50%',
-    translate:'-50%',
-    padding:'0rem 0rem',
-  
-    
-  }).addTo(app)
-  ._el('fieldset',{
-    role:'group'
-  }).
-    _el('input',{
-      type:'text',
-        ariaLabel:'taskname field'
-      ,placeHolder:'enter task'
-      ,autocomplete:'off'
-    }).model(taskname).$end().
-    _el('input',{
-      type:'submit',
-      value:'add task'
-    
-    }).$end()
-  .$end().
-  checkFor('submit',(e)=>{
-    e.preventDefault()
-    let listName=''
-    let taskNameE=''
-    if(taskname.value !=''){
-       let indexOfSplit=taskname.value.search("::")
-
-      if(indexOfSplit!=-1){
-        listName=taskname.value.slice(0,indexOfSplit)
-        taskNameE=taskname.value.slice(indexOfSplit+2)
-        
-        
-        if(!lists.value.includes(listName)){
-          console.log('list creation')
-          lists.value=[...lists.value,listName]
-      
-        }
-      }else{
-        taskNameE=taskname.get()
-      }
-      
-      tasks.value.push({
-        name:taskNameE,
-        done:false,
-        createdOn:`${currentDate.toLocaleDateString('en-GB')}      ${currentDate.toLocaleTimeString('en-US')}`,
-        note:'',
-        priority:'no priority',
-        due:defaultDue,
-        isHabit:false,
-        list:listName
-      })
-      tasks.update()
-      lists.update()
-      
-      taskname.set(listName+(listName?"::":'')+'')   
-    }
-  })
-  //task area------------------------------------------------
-  let taskarea=el('div').style({
-    maxHeight:'77vh',
-    overflow:'auto',
-    marginBottom:'8rem'
-    
-  })._el('ul').style({
-  listStyle:'none',
-  padding:'0px',
-  paddingTop:'2rem',
-    margin:'0px',
- 
-  }).loops(SELECTED_VIEW,(obj,p)=>{
-  
-    TaskItem(obj).addTo(p)
-    
-  })
-  .$end().addTo(app)
-  //due tasks-----------------------
-  
-  el('section').addTo(taskarea)
-  ._el('hgroup',{id:'no-task'}).style({textAlign:'center',padding:'2rem',paddingTop:'1rem'}).
-  _el('h5','you have no pending tasks').$end()
-  ._el('p','add a new task by entering the name of task in the field above').$end()
-  .showIf(tasks,t=>t.length==0)
-  .$end()
-  ._el('div').style({
-    marginTop:'4rem'
-  }).
- _el('details',{class:'list'}).
-    _el('summary','over due tasks').$end(). 
-    _el('p').loops(yesterday,(obj,p)=>{
-      if(!obj.done){
-        TaskItem(obj).addTo(p)
-      }
-    }).$end().showIf(yesterday,(d)=>d.filter(obj=>!obj.done).length>0)
-    .$end().
-  
-    _el('details',{class:'list'}).
-    _el('summary','completed earlier').$end(). 
-    _el('p').loops(yesterday,(obj,p)=>{
-      if(obj.done){
-        TaskItem(obj).addTo(p)
-      }
-    }).$end().showIf(yesterday,(d)=>d.filter(obj=>obj.done).length>0)
-    
-    .$end()
-    ._el('div').loops(lists,(name,parent)=>{
-         
-     let ls=List(tasks,name)
-     ls?ls.addTo(parent):lists.value=lists.value.filter(l=>l!=name)
-
-    })
-
-
-  
-
-  
-
-
-  //updating the localstorage each time tasks is updated
-  tasks.subscribe(()=>{
+let appData = d.createStore("app_data", {
+   states: {
+      selected_date: '',
+      selected_view_name: "Today",
+      isLoggedIn:false,
+      accessToken:'',
+      tasks:[]
+   },
+   getters: {
+      isTaskEmpty() {
+         return this.tasks.value.length == 0;
+      },
    
-  localStorage.tasks=JSON.stringify(tasks.value)
-  
-  
-  })
-  tasks.update()
- lists.subscribe(()=>{
-  localStorage.lists=JSON.stringify(lists.value)
-  console.log(lists.value)
- }) 
-lists.update()
-//task list sharing optimiser
-function getSharedList(){
-   let url=new URL(window.location.href)
-  let q=new URLSearchParams(url.search).get('q')
- if(q==null){
-  return
- }
-  
-  let data=JSON.parse(q)
-  let listName=data[0]
-  let todoData=data[1]
-  let dedocdedData=todoData.map((v)=>{
-        return {name:v[0],
-        done:v[1],
-        createdOn:`${currentDate.toLocaleDateString('en-GB')}      ${currentDate.toLocaleTimeString('en-US')}`,
-        note:v[2]||'',
-        priority:'no priority',
-        due:defaultDue,
-        isHabit:false,
-        list:listName
-        }  
-  })
-  if(!lists.value.includes(listName)){
-  lists.value=[...lists.value,listName]
-  
-  tasks.set([...tasks.value,...dedocdedData])
-  lists.update()
-  history.replaceState(null,'',`/todo`)
-  }else{
-    alert('duplicate list with same name found please move or delete it or make modification to url part where name of the list is ')
-  }
+   },
+   actions: {
+      addTask(store, _, data) {
+         store.tasks.value = [
+            ...store.tasks.value,
+            {
+               title: data.name,
+               done: false,
+               id:1001
+            }
+         ];
+
+         fetch(APILINK+'todo',{
+          method:'POST',
+          body:JSON.stringify({
+            title:data.name,
+            done:false
+          })
+,  headers:{
+               'Authorization':`Bearer ${store.accessToken.value}`,
+               'Content-Type':'application/json'
+            }
+         })
+
+         
+
+      },
+      modifyTaskDone(store, _, id, value) {
+         console.log('modification call',id,value)
+         let [task] = store.tasks.value.filter((t) => t.id == id);
+         console.log(task)
+         task.done = value;
+
+         fetch(APILINK+'todo/'+id,{
+            method:'PATCH',
+
+            body:JSON.stringify({
+                  "done":value
+            }),
+            headers:{
+               'Authorization':"Bearer "+store.accessToken.value,
+               'Content-Type':'application/json'
+            }
+         })
+
+         localStorage.setItem("tasks", JSON.stringify(store.tasks.value));
+      },
+
+      removeTask(store, _, id) {
+         store.tasks.value = store.tasks.value.filter((t) => t.id != id);
+         fetch(APILINK+'todo/'+id,{
+            method:'DELETE',
+            headers:{
+               'Authorization':"Bearer "+store.accessToken.value,
+               'Content-Type':'application/json'
+            }
+         })
+
+      },
+
+      setAccessToken(store,_,token){
+         store.accessToken.value=token
+         store.isLoggedIn.value=true
+         this.setUpSaves(store)
+         localStorage.setItem('token',store.accessToken.value)
+      }
+
+,
+
+    async setUpSaves(store) {
+    //     d.effect(() => {
+   //         localStorage.setItem("tasks", JSON.stringify(store.tasks.value));
+    //     });
+         
+         let resp=await fetch(APILINK+'todo',{
+            method:'GET',
+            headers:{
+               'Authorization':`Bearer ${store.accessToken.value}`
+            }
+         })
+         if(resp.ok){
+            store.tasks.value=await resp.json()
+            
+         }
+
+         
+      },
+      checkIfLoggedIn(store){
+         let token=localStorage.getItem('token')||''
+         if(!token){
+               store.isLoggedIn.value=false
+         }else{
+            store.accessToken.value=token
+            store.isLoggedIn.value=true
+            this.setUpSaves(store)
+         }
+      }
+   }
+});
+appData.setUpSaves();
+appData.checkIfLoggedIn()
+const noTaskMsg = () => {
+   return d.section(
+      d
+         .el(
+            "hgroup",
+            { id: "no-task" },
+            d.h5("you have no pending task"),
+            d.p(
+               "add a new task by entering the name of the task in the field above"
+            )
+         )
+         .css({ textAlign: "center", padding: "2rem", paddingTop: "1rem" })
+   );
+};
+
+const header = () => {
+   let selected_date = appData.getRef("selected_date");
+   let selected_view_name = appData.getRef("selected_view_name");
+
+   return d.el("hgroup", d.h3(selected_view_name), d.p(` `)).css({
+      paddingTop: "2.4rem"
+   });
+};
+
+
+const loginForm=()=>{
+   let email=d.state("")
+   let password=d.state("")
+   return d.form(
+               d.label("email")
+               ,d.input({placeHolder:"enter your email", type:"email"}).model(email),
+               d.label("password"),
+                d.input({placeHolder:"enter your password",type:"password"}).model(password),
+                d.input({type:"submit",value:"register account"})
+            ).on("submit",async (e)=>{
+               e.preventDefault()
+
+               let req=await fetch(APILINK+'auth/login',{
+                  method:'POST',
+                  body:JSON.stringify({
+                     email:email.value,
+                     password:password.value
+                  }),
+                  headers:{
+                     'Content-Type':'application/json'
+                  }
+               })
+
+               if(req.ok){
+                  let content=await req.json()
+                  console.log(content)
+                  appData.setAccessToken(content.access_token)
+                  
+               }
+            })
+
+
 }
-getSharedList()
 
 
-  if('serviceWorker' in navigator){
-   navigator.serviceWorker.register('./sw.js')
-  }
+const signUpform=()=>{
+   let name=d.state("")
+   let email=d.state("")
+   let password=d.state("")
+
+   return  d.form(
+               d.label("name")
+               ,d.input({placeHolder:"enter your name "}).model(name),
+               d.label("email")
+               ,d.input({placeHolder:"enter your email", type:"email"}).model(email),
+               d.label("password"),
+                d.input({placeHolder:"enter your password",type:"password"}).model(password),
+                d.input({type:"submit",value:"register account"})
+            ).on("submit",async (e)=>{
+               e.preventDefault()
+               let resp=await fetch(APILINK+'auth/register',{
+                  method:'POST',
+                  headers:{
+                        'Content-Type': 'application/json',
+                  },
+                  body:JSON.stringify({
+                     name:name.value,
+                     password:password.value,
+                     email:email.value
+                  }),
+               }) 
+
+               if(resp.ok){
+                  let content=await resp.json()
+                  console.log(content)
+                  appData.setAccessToken(content.accessToken)
+               }
+
+
+
+
+
+            })
+}
+const popup = () => {
+   let priority = d.state();
+   let note = d.state();
+
+   let formState=d.state("signup")
+   let isActiveLogin=d.derived(()=>formState.value!="login")
+   let isActiveSignup=d.derived(()=>formState.value!="signup")
+   return d.dialog(
+      { open: "" },
+      d.article(
+         d.header(
+            d.button({ ariaLabel: "close", rel: "prev" }),
+            d.p(d.strong(formState))
+         ),
+         d.p("to use the app you have to create an AW account"),
+         d.div({role:'group'},
+            d.button("login").on("click",()=>formState.value="login").bindClass(isActiveLogin,"outline"),
+            d.button("signup").on("click",()=>formState.value="signup").bindClass(isActiveSignup,"outline"),
+                   )
+,           loginForm().showIf(()=>formState.value=="login"),
+            signUpform().showIf(()=>formState.value=="signup"),
+
+
+      )
+   );
+};
+
+const taskItem = (task) => {
+   let isDone = d.state(task.done);
+
+
+   return d
+      .li(
+         d
+            .input({ type: "checkbox", ariaLabel: "complete task " })
+            .css({ minWidth: "1.1rem" })
+            .bindAttr(isDone, "checked")
+            .on("input", (e) => {
+               isDone.value = !isDone.value;
+      appData.modifyTaskDone(task.id, isDone.value);
+            }),
+         d.span(task.title).css(() => ({
+            textDecoration: isDone.value ? "line-through" : "none",
+            opacity: isDone.value ? "0.5" : "1",
+            textAlign: "center",
+            cursor: "pointer"
+         })),
+         d
+            .button({
+               class: "outline",
+               ariaLabel: "close",
+               title: "remove task"
+            })
+            .html(
+               `<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill="currentColor" class="bi bi-x-lg" viewBox="0 0 16 16">
+        <path d="M2.146 2.854a.5.5 0 1 1 .708-.708L8 7.293l5.146-5.147a.5.5 0 0 1 .708.708L8.707 8l5.147 5.146a.5.5 0 0 1-.708.708L8 8.707l-5.146 5.147a.5.5 0 0 1-.708-.708L7.293 8z"/>
+      </svg>`
+            )
+            .on("click", () => {
+               appData.removeTask(task.id);
+            })
+            .css({
+               padding: "0.3rem",
+               display: "inline-flex",
+               alignItems: "center",
+               justifyContent: "center"
+            })
+      )
+      .css({
+         width: "100%",
+         display: "flex",
+         justifyContent: "space-between",
+         alignItems: "center",
+         padding: "0.5rem 1rem"
+      });
+};
+
+const taskarea = () => {
+   let tasks = appData.getRef("tasks")
+
+   return d
+      .div(
+         noTaskMsg().showIf(appData.isTaskEmpty),
+
+         d
+            .ul()
+            .forEvery(tasks, (task) => {
+               console.log(task);
+               return taskItem(task);
+            })
+            .css({
+               listStyle: "none",
+               padding: "0px",
+               paddingTop: "2rem",
+               margin: "0px"
+            })
+      )
+      .css({
+         maxHeight: "77vh",
+         overflow: "auto",
+         marginBottom: "8rem"
+      });
+};
+
+const taskForm = () => {
+   let tname = d.state("");
+   return d.div(
+   d.div(
+            d.button("suggest tasks",{
+                class:'outline'
+            }).css({
+            marginBottom:'1rem',
+            background:'rgba(255,255,255,0.5)',
+            backdropFilter:'blur(5px)',
+            padding:'0.18rem 0.8rem',
+            borderRadius:'5rem'
+
+        }).on("click",(e)=>{
+            e.preventDefault()
+                e.stopPropagation()
+}).showIf(tname)
+    ).css({
+        width:'100%'
+        ,display:'flex',
+        justifyContent:'center'
+    })
+,    
+    d
+      .form(
+         d.fieldset(
+            { role: "group" },
+            d
+               .input({
+                  type: "text",
+                  ariaLabel: "taskname field",
+                  placeHolder: "enter task",
+                  autocomplete: "off"
+               })
+               .model(tname),
+            d.input({
+               type: "submit",
+               value: "add task"
+            })
+         )
+      )
+      .on("submit", (e) => {
+         e.preventDefault();
+         appData.addTask({ name: tname.value });
+         tname.value = "";
+      }))
+      .css({
+         position: "fixed",
+         bottom: "0",
+         width: "90%",
+         left: "50%",
+         translate: "-50%",
+         padding: "0rem 0rem"
+      });
+};
+
+const app = () => {
+   let isLoggedIn=appData.getRef("isLoggedIn")
+   return d
+      .div(
+         popup().showIf(()=>!isLoggedIn.value),
+         header(),
+
+         taskarea(),
+         taskForm()
+      )
+      .css({
+         position: "relative",
+         width: "100%",
+         padding: "2rem",
+         paddingTop: "0px"
+      });
+};
+
+
+app().addTo(document.body)
